@@ -15,18 +15,14 @@ export default function EventsPage() {
           const [error, setError] = useState<string | null>(null);
           const router = useRouter();
 
-          const API_URL = 'http://127.0.0.1:8000/api/';
 
           // Fetch events from your API
           useEffect(() => {
                     const fetchEvents = async () => {
                               try {
-                                        const response = await api(`${API_URL}getEvents`);
-                                        if (!response.ok) {
-                                                  throw new Error('Failed to fetch events');
-                                        }
-                                        const data = await response.json();
-                                        const formattedEvents = data.events.map((event: Event) => {
+                                        const response = await api.get(`getEvents`);
+
+                                        const formattedEvents = response.data.events.map((event: Event) => {
                                                   const now = new Date(); // Current time
                                                   const startTime = new Date(event.start_time); // Parse start_time as Date
                                                   const endTime = new Date(event.end_time); // Parse end_time as Date
@@ -79,7 +75,7 @@ export default function EventsPage() {
           // Handle event deletion
           const handleDelete = async (eventId: number) => {
                     try {
-                              await api(`${API_URL}deleteEvent/${eventId}`, {
+                              await api(`deleteEvent/${eventId}`, {
                                         method: 'DELETE',
                               });
                               setEvents(events.filter((event) => event.id !== eventId));
