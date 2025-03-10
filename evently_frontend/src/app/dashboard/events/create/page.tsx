@@ -37,11 +37,10 @@ const CreateEventPage: React.FC = () => {
                     { name: "", price: 0, complimentary: false, active: false, user_id: 0 }, // Initialize with user_id
           ]);
 
-          const API_URL = 'http://127.0.0.1:8000/api/';
           useEffect(() => {
                     const fetchUsers = async () => {
                               try {
-                                        const response = await api.get(`${API_URL}getUsers`);
+                                        const response = await api.get(`getUsers`);
                                         if (response?.data?.users) {
                                                   setUsers(response.data.users);
                                         } else {
@@ -59,7 +58,7 @@ const CreateEventPage: React.FC = () => {
           const onSubmitEvent = async (data: FormData) => {
                     setFormLoading(true);
                     try {
-                              const response = await api.post(`${API_URL}createEvent`, data);
+                              const response = await api.post(`createEvent`, data);
                               setEventId(response.data.id); // Store the event ID
                               setUserId(data.user_id); // Store the user_id from the event creation
                               showToast.success("Event created successfully!");
@@ -73,7 +72,7 @@ const CreateEventPage: React.FC = () => {
           };
 
           const onSubmitTicketTypes = async () => {
-                    if (!eventId || !userId) {
+                    if (!eventId) {
                               showToast.error("Event ID or User ID is missing");
                               return;
                     }
@@ -83,7 +82,7 @@ const CreateEventPage: React.FC = () => {
                               // Submit each ticket type with the user_id
                               await Promise.all(
                                         ticketTypes.map((ticketType) =>
-                                                  api.post(`${API_URL}ticketTypes`, { ...ticketType, event_id: eventId, user_id: userId })
+                                                  api.post(`$ticketTypes`, { ...ticketType, event_id: eventId })
                                         )
                               );
 

@@ -48,19 +48,19 @@ class EventController extends Controller
 
     public function getEvents()
     {
-        $events = Event::all();
+        $events = Event::with('ticketTypes')->get();
 
         return response()->json([
             'events' => $events
         ], 200);
-
     }
+
 
     // get event
 
     public function getEvent($id)
     {
-        $event = Event::find($id);
+        $event = Event::with('ticketTypes')->find($id);
 
         if (!$event) {
             return response()->json(['message' => 'Event not found'], 404);
