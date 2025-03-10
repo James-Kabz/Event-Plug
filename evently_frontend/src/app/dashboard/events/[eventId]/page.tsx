@@ -7,6 +7,7 @@ import { showToast } from "@/components/ToastMessage";
 import Loading from "@/app/loading";
 import { Event, TicketType } from "@/types";
 import EventDetails from "@/components/EventDetails";
+import api from "../../../../../lib/axios";
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
@@ -19,14 +20,13 @@ export default function EventDetailPage() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/events/${eventId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch event details");
-        }
-        const data = await response.json();
-
+        const response = await api.get(`getEvent/${eventId}`);
+        const data = response.data;
+  
+        console.log("API Response:", data); // Debugging line
+  
         setEvent(data.event);
-        setTicketTypes(data.event.ticketTypes || []);
+        setTicketTypes(data.event.ticketTypes || data.event.ticket_types || []);
         
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -35,9 +35,10 @@ export default function EventDetailPage() {
         setLoading(false);
       }
     };
-
+  
     if (eventId) fetchEvent();
   }, [eventId]);
+  
 
   if (loading) return <Loading />;
   if (error) return <div className="text-red-500 text-center text-xl font-semibold">{error}</div>;
