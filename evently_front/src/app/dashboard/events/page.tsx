@@ -7,6 +7,7 @@ import { showToast } from '@/components/ToastMessage'; // Adjust the path as nee
 import Loading from '../../loading'; // Import the Loading component
 import Card from '@/components/Card'; // Import the Card component
 import { Event } from '@/types'; // Adjust the path to your Event type definition
+import api from '../../../../lib/axios';
 
 export default function EventsPage() {
           const [events, setEvents] = useState<Event[]>([]);
@@ -14,11 +15,13 @@ export default function EventsPage() {
           const [error, setError] = useState<string | null>(null);
           const router = useRouter();
 
+          const API_URL = 'http://127.0.0.1:8000/api/';
+
           // Fetch events from your API
           useEffect(() => {
                     const fetchEvents = async () => {
                               try {
-                                        const response = await fetch('http://localhost:3000/api/events/');
+                                        const response = await api(`${API_URL}getEvents`);
                                         if (!response.ok) {
                                                   throw new Error('Failed to fetch events');
                                         }
@@ -76,7 +79,7 @@ export default function EventsPage() {
           // Handle event deletion
           const handleDelete = async (eventId: number) => {
                     try {
-                              await fetch(`http://localhost:3000/api/events/${eventId}`, {
+                              await api(`${API_URL}deleteEvent/${eventId}`, {
                                         method: 'DELETE',
                               });
                               setEvents(events.filter((event) => event.id !== eventId));
