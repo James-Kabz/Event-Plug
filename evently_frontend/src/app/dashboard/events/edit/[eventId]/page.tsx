@@ -6,11 +6,12 @@ import api from '../../../../../../lib/axios';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Form from '@/components/Form';
-import { User } from '@/db/models/User';
-import { Event } from '@/types';
+import { Event,User } from '@/types';
 import { showToast } from '@/components/ToastMessage';
 import Loading from "@/app/loading";
-
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 interface FormData {
           name: string;
           description: string;
@@ -41,36 +42,45 @@ const EditEvent = () => {
           const [error, setError] = useState<string | null>(null);
           const [formLoading, setFormLoading] = useState<boolean>(false);
 
+          dayjs.extend(utc);
+dayjs.extend(timezone);
           useEffect(() => {
                     if (eventId) {
-                              const fetchEvent = async () => {
-                                        try {
-                                                  const response = await api.get(`/events/${eventId}`);
-                                                  const event = response.data.event;
-                                                  setEvent(event);
-                                                  setEventStartTime(new Date(event.start_time));
-                                                  setEventEndTime(new Date(event.end_time));
-                                                  // Update formData with event data
-                                                  setFormData({
-                                                            name: event.name || '',
-                                                            description: event.description || '',
-                                                            start_time: event.start_time ? new Date(event.start_time).toISOString().slice(0, 16) : '',
-                                                            end_time: event.end_time ? new Date(event.end_time).toISOString().slice(0, 16) : '',
-                                                            image: event.image || '',
-                                                            location: event.location || '',
-                                                            user_id: event.user_id?.toString() || ''
-                                                  });
-                                        } catch (err) {
-                                                  console.log(err);
-                                                  setError('Failed to fetch event');
-                                        } finally {
-                                                  setLoading(false);
-                                        }
-                              };
+                        const fetchEvent = async () => {
+                            try {
+                                const response = await api.get(`getEvent/${eventId}`);
+                                const event = response.data.event;
+                        
+                                setEvent(event);
+                                // Convert UTC time to local time
+                                setEventStartTime(dayjs.utc(event.start_time).local().toDate());
+                                setEventEndTime(dayjs.utc(event.end_time).local().toDate());
+                        
+                                // Update formData with properly formatted local times
+                                setFormData({
+                                    name: event.name || '',
+                                    description: event.description || '',
+                                    start_time: event.start_time
+                                        ? dayjs.utc(event.start_time).local().format('YYYY-MM-DDTHH:mm') // datetime-local format
+                                        : '',
+                                    end_time: event.end_time
+                                        ? dayjs.utc(event.end_time).local().format('YYYY-MM-DDTHH:mm')
+                                        : '',
+                                    image: event.image || '',
+                                    location: event.location || '',
+                                    user_id: event.user_id?.toString() || ''
+                                });
+                            } catch (err) {
+                                console.log(err);
+                                setError('Failed to fetch event');
+                            } finally {
+                                setLoading(false);
+                            }
+                        };
 
                               const fetchUsers = async () => {
                                         try {
-                                                  const response = await api.get(`/users`);
+                                                  const response = await api.get(`getUsers`);
                                                   setUsers(response.data.users);
                                         } catch (err) {
                                                   console.log(err);
@@ -84,25 +94,25 @@ const EditEvent = () => {
           }, [eventId]);
 
           const handleSubmit = async (data: FormData) => {
-                    setFormLoading(true);
-                    try {
-                              const formattedData = {
-                                        ...data,
-                                        start_time: new Date(data.start_time).toISOString(),
-                                        end_time: new Date(data.end_time).toISOString(),
-                              };
-                              await api.put(`/events/${eventId}`, formattedData);
-                              showToast.success('Event updated successfully!');
-                              setTimeout(() => {
-                                        router.push('/dashboard/events');
-                              }, 2000);
-                    } catch (err) {
-                              console.log(err);
-                              showToast.error('Failed to update event');
-                    } finally {
-                              setFormLoading(false);
-                    }
-          };
+            setFormLoading(true);
+            try {
+                const formattedData = {
+                    ...data,
+                    start_time: dayjs(data.start_time).format('YYYY-MM-DD HH:mm:ss'),
+                    end_time: dayjs(data.end_time).format('YYYY-MM-DD HH:mm:ss'),
+                };
+                await api.put(`editEvent/${eventId}`, formattedData);
+                showToast.success('Event updated successfully!');
+                setTimeout(() => {
+                    router.push('/dashboard/events');
+                }, 2000);
+            } catch (err) {
+                console.log(err);
+                showToast.error('Failed to update event');
+            } finally {
+                setFormLoading(false);
+            }
+        };
 
           if (loading) return <Loading />;
           if (error) return <div className="text-red-500">{error}</div>;

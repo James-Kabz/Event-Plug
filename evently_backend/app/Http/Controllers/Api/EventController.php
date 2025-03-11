@@ -75,39 +75,24 @@ class EventController extends Controller
 
     public function editEvent(Request $request, $id)
     {
-        try {
-            $data = $request->validate([
-                'name' => 'sometimes|string|max:255',
-                'description' => 'sometimes|string',
-                'start_time' => 'sometimes|date',
-                'end_time' => 'sometimes|date|after:start_time',
-                'location' => 'sometimes|string|max:255',
-                'image' => 'sometimes|string|url',
-            ]);
+        $data = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'start_time' => 'sometimes|date_format:Y-m-d H:i:s',
+            'end_time' => 'sometimes|date_format:Y-m-d H:i:s|after:start_time',
+            'location' => 'sometimes|string|max:255',
+            'image' => 'sometimes|string|url',
+        ]);
 
-            $event = Event::findOrFail($id);
-            $event->update($data);
+        $event = Event::findOrFail($id);
+        $event->update($data);
 
-            return response()->json([
-                'message' => 'Event updated successfully.',
-                'event' => $event
-            ], 200);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation failed.',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'Event not found.'
-            ], 404);
-        } catch (\Exception $e) {
-            Log::error('Error updating event: ' . $e->getMessage());
-            return response()->json([
-                'message' => 'An unexpected error occurred while updating the event.'
-            ], 500);
-        }
+        return response()->json([
+            'message' => 'Event updated successfully.',
+            'event' => $event
+        ]);
     }
+
 
 
     // delete event
