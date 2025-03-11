@@ -15,4 +15,6 @@ class UserController extends Controller
             'users' => $users
         ]);
     }
+
+    // create user
 }

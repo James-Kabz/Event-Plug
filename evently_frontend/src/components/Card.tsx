@@ -85,7 +85,7 @@ const Card: React.FC<CardProps> = ({ event, onView, onEdit, onDelete, onEditTick
                                                   >
                                                             Delete
                                                   </button>
-                                                  {onEditTicketTypes && (
+                                                  {/* {onEditTicketTypes && (
                                                             <button
                                                                       onClick={() => onEditTicketTypes(event.id)}
                                                                       className="flex-1 px-2 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 transition flex items-center justify-center gap-1"
@@ -93,7 +93,7 @@ const Card: React.FC<CardProps> = ({ event, onView, onEdit, onDelete, onEditTick
                                                                       <FaTicketAlt className="text-sm" />
                                                                       Tickets
                                                             </button>
-                                                  )}
+                                                  )} */}
                                         </div>
                               </div>
                     </div>

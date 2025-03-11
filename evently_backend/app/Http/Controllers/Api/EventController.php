@@ -14,36 +14,64 @@ use Illuminate\Support\Facades\Log;
 class EventController extends Controller
 {
     // create event 
+
     public function createEvent(Request $request)
-    {
-        try {
-            $data = $request->validate([
-                'name' => 'required|string|max:255',
-                'description' => 'required|string',
-                'start_time' => 'required|date',
-                'end_time' => 'required|date|after:start_time',
-                'location' => 'required|string|max:255',
-                'image' => 'nullable|string|url',
-            ]);
+{
+    try {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after:start_time',
+            'image' => 'nullable|string',
+            'location' => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
+        ]);
 
-            $event = Event::create([
-                'name' => $data['name'],
-                'description' => $data['description'],
-                'start_time' => Carbon::parse($data['start_time'])->format('Y-m-d H:i:s'),
-                'end_time' => Carbon::parse($data['end_time'])->format('Y-m-d H:i:s'),
-                'location' => $data['location'],
-                'image' => $data['image'] ?? null,
-                'user_id' => 1,
-            ]);
+        $event = Event::create($data);
 
-            return response()->json(['message' => 'Event created successfully.', 'event' => $event], 201);
-        } catch (ValidationException $e) {
-            return response()->json(['message' => 'Validation failed.', 'errors' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            Log::error('Error creating event: ' . $e->getMessage());
-            return response()->json(['message' => 'An unexpected error occurred.'], 500);
-        }
+        return response()->json([
+            'message' => 'Event created successfully.',
+            'id' => $event->id, // ✅ Ensure event ID is returned
+            'event' => $event
+        ], 201);
+    } catch (\Exception $e) {
+        Log::error('Error creating event: ' . $e->getMessage());
+        return response()->json(['message' => 'An unexpected error occurred.'], 500);
     }
+}
+
+
+    // public function createEvent(Request $request)
+    // {
+    //     try {
+    //         $data = $request->validate([
+    //             'name' => 'required|string|max:255',
+    //             'description' => 'required|string',
+    //             'start_time' => 'required|date',
+    //             'end_time' => 'required|date|after:start_time',
+    //             'location' => 'required|string|max:255',
+    //             'image' => 'nullable|string|url',
+    //         ]);
+
+    //         $event = Event::create([
+    //             'name' => $data['name'],
+    //             'description' => $data['description'],
+    //             'start_time' => Carbon::parse($data['start_time'])->format('Y-m-d H:i:s'),
+    //             'end_time' => Carbon::parse($data['end_time'])->format('Y-m-d H:i:s'),
+    //             'location' => $data['location'],
+    //             'image' => $data['image'] ?? null,
+    //             'user_id' => 1,
+    //         ]);
+
+    //         return response()->json(['message' => 'Event created successfully.', 'event' => $event], 201);
+    //     } catch (ValidationException $e) {
+    //         return response()->json(['message' => 'Validation failed.', 'errors' => $e->errors()], 422);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error creating event: ' . $e->getMessage());
+    //         return response()->json(['message' => 'An unexpected error occurred.'], 500);
+    //     }
+    // }
     // get events
 
     public function getEvents()

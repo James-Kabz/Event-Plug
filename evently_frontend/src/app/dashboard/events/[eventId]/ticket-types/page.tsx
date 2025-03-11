@@ -32,6 +32,8 @@ const EditTicketTypes = () => {
                                         try {
                                                   const response = await api.get(`/events/${eventId}/ticket-types`);
                                                   setTicketTypes(response.data.ticketTypes);
+
+                                                  console.log(response);
                                         } catch (err) {
                                                   console.log(err);
                                                   setError('Failed to fetch ticket types');
