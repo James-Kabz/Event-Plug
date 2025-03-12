@@ -8,7 +8,7 @@ import { showToast } from "@/components/ToastMessage"; // Adjust path if needed
 
 import Card from "@/components/Card"; // Import Card component
 import { Event } from "@/types"; // Adjust path to your Event type definition
-import api from "../../../lib/axios";
+import api from "../../../../lib/axios";
 import Loading from "../loading";
 
 

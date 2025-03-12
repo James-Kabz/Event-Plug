@@ -48,7 +48,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                                         </header>
 
                                         {/* Content Area */}
-                                        <main className="flex-grow p-6 overflow-y-auto">{children}</main>
+                                        <main className="">{children}</main>
 
                                         {/* Toast Notifications */}
                                         <ToastContainer />
