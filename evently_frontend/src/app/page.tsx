@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Footer from "@/components/Footer";
+// import Footer from "@/components/Footer";
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
 import EventsPage from "./dashboard/events/page";
