@@ -11,8 +11,10 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "framer-motion": "^12.4.1",
+    "lucide-react": "^0.479.0",
     "mysql2": "^3.12.0",
     "next": "15.2.1",
     "react": "^19.0.0",

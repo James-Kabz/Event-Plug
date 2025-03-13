@@ -56,47 +56,72 @@ const CreateEventPage: React.FC = () => {
           }, []);
 
           const onSubmitEvent = async (data: FormData) => {
-                    setFormLoading(true);
-                    try {
-                              const response = await api.post(`createEvent`, data);
-                              setEventId(response.data.id); // Store the event ID
-                              setUserId(data.user_id); // Store the user_id from the event creation
-                              showToast.success("Event created successfully!");
-                              setStep(2);
-                    } catch (error) {
-                              console.error("Failed to create event", error);
-                              showToast.error("Failed to create event");
-                    } finally {
-                              setFormLoading(false);
-                    }
-          };
+            setFormLoading(true);
+            try {
+                const response = await api.post(`createEvent`, data);
+                if (response?.data?.id) {
+                    const newEventId = response.data.id;
+                    const newUserId = data.user_id;
+        
+                    setEventId(newEventId); // Store event ID
+                    setUserId(newUserId); // Store user ID
+                    showToast.success("Event created successfully!");
+        
+                    // Move to step 2 (Create Ticket Types) immediately
+                    setStep(2);
+        
+                    // Directly update the ticketTypes state with the correct IDs
+                    setTicketTypes((prevTicketTypes) =>
+                        prevTicketTypes.map((ticket) => ({
+                            ...ticket,
+                            event_id: newEventId, // Set event ID immediately
+                            user_id: newUserId, // Set user ID immediately
+                        }))
+                    );
+                } else {
+                    throw new Error("Event ID not received from APP");
+                }
+            } catch (error) {
+                console.error("Failed to create event", error);
+                showToast.error("Failed to create event");
+            } finally {
+                setFormLoading(false);
+            }
+        };
+        
+        
 
-          const onSubmitTicketTypes = async () => {
-                    if (!eventId) {
-                              showToast.error("Event ID or User ID is missing");
-                              return;
-                    }
-
-                    setFormLoading(true);
-                    try {
-                              // Submit each ticket type with the user_id
-                              await Promise.all(
-                                        ticketTypes.map((ticketType) =>
-                                                  api.post(`$ticketTypes`, { ...ticketType, event_id: eventId })
-                                        )
-                              );
-
-                              showToast.success("All ticket types added successfully!");
-                              setTimeout(() => {
-                                        router.push("/dashboard/events");
-                              }, 2000);
-                    } catch (error) {
-                              console.error("Failed to create ticket types", error);
-                              showToast.error("Failed to create ticket types");
-                    } finally {
-                              setFormLoading(false);
-                    }
-          };
+        const onSubmitTicketTypes = async () => {
+            if (!eventId) {
+                showToast.error("Event ID is missing");
+                return;
+            }
+        
+            setFormLoading(true);
+            try {
+                await Promise.all(
+                    ticketTypes.map((ticketType) =>
+                        api.post(`createTicketType`, { 
+                            ...ticketType, 
+                            event_id: eventId, 
+                            user_id: userId ?? 1 // Ensure correct user ID
+                        })
+                    )
+                );
+        
+                showToast.success("All ticket types added successfully!");
+                setTimeout(() => {
+                    router.push("/dashboard/events");
+                }, 2000);
+            } catch (error) {
+                console.error("Failed to create ticket types", error);
+                showToast.error("Failed to create ticket types");
+            } finally {
+                setFormLoading(false);
+            }
+        };
+        
+        
 
           const addNewTicketType = () => {
                     setTicketTypes([

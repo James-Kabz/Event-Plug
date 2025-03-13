@@ -1,11 +1,16 @@
 <?php
 
-use App\Http\Controllers\Api\TicketTypeController;
-use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Api\TicketTypeController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\EventController;
+
+
+Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
+    return $request->user();
+});
+
 
 // events api's
 Route::post('createEvent',[EventController::class,'createEvent']);
@@ -29,7 +34,3 @@ Route::get('/events/{event_id}/ticket-types', [TicketTypeController::class, 'get
 // users api
 
 Route::get('getUsers', [UserController::class, 'getUsers']);
-
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');

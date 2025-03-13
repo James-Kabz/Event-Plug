@@ -8,6 +8,7 @@ import Loading from '../../loading'; // Import the Loading component
 import Card from '@/components/Card'; // Import the Card component
 import { Event } from '@/types'; // Adjust the path to your Event type definition
 import api from '../../../../lib/axios';
+import Footer from '@/components/Footer';
 
 export default function EventsPage() {
           const [events, setEvents] = useState<Event[]>([]);
@@ -137,6 +138,7 @@ export default function EventsPage() {
                                                   ))}
                                         </div>
                               </div>
+                              <Footer />
                     </div>
           );
 }

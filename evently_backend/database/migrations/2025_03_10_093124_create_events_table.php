@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description');
             $table->dateTime('start_time');
             $table->dateTime('end_time');
+            $table->string('timezone')->default('UTC');
             $table->string('image')->nullable();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('location');

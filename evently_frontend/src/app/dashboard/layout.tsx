@@ -2,59 +2,66 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "../../components/Sidebar";
-import { FaBars } from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Menu } from "lucide-react";
 
 type DashboardLayoutProps = {
-          children: React.ReactNode;
+    children: React.ReactNode;
 };
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-          const router = useRouter();
-          const [activeTab, setActiveTab] = useState("Dashboard");
-          const [sidebarOpen, setSidebarOpen] = useState(false);
+    const router = useRouter();
+    const [activeTab, setActiveTab] = useState("Dashboard");
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
-          useEffect(() => {
-                    const savedTab = localStorage.getItem("activeTab");
-                    if (savedTab) {
-                              setActiveTab(savedTab);
-                    }
-          }, []);
+    useEffect(() => {
+        const savedTab = localStorage.getItem("activeTab");
+        if (savedTab) {
+            setActiveTab(savedTab);
+        }
+    }, []);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const handleTabChange = (tabName: string, _view: string) => {
+        setActiveTab(tabName);
+        localStorage.setItem("activeTab", tabName);
+        router.push(`/dashboard/${tabName.toLowerCase()}`);
+    };
 
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const handleTabChange = (tabName: string, _view: string) => {
-                    setActiveTab(tabName);
-                    localStorage.setItem("activeTab", tabName);
-                    router.push(`/dashboard/${tabName.toLowerCase()}`);
-          };
+    return (
+        <div className="flex min-h-screen">
+            {/* Sidebar Section */}
+            <aside
+                className={`fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-900 transition-transform transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+                    } md:relative md:translate-x-0 md:w-72`}
+            >
+                <Sidebar
+                    sidebarOpen={sidebarOpen}
+                    setSidebarOpen={setSidebarOpen}
+                    activeTab={activeTab}
+                    handleTabChange={handleTabChange}
+                />
+            </aside>
 
-          return (
-                    <div className="flex h-screen">
-                              {/* Sidebar */}
-                              <div className="w-64">
-                                        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} activeTab={activeTab} handleTabChange={handleTabChange} />
-                              </div>
+            {/* Main Content */}
+            <div className="flex flex-col flex-1 gap-8 items-center justify-center">
+                {/* Sidebar Toggle Button (Visible on Small Screens) */}
+                <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="fixed top-2 left-2 z-50 md:hidden bg-gray-800 text-white p-2 rounded-full shadow-md"
+                >
+                    <Menu size={24} />
+                </button>
 
-                              {/* Main Content */}
-                              <div className="flex-1 flex flex-col bg-gray-100 text-gray-900">
-                                        {/* Mobile Navbar */}
-                                        <header className="flex items-center justify-between bg-gray-800 p-4 lg:hidden">
-                                                  <button className="text-white" onClick={() => setSidebarOpen(true)}>
-                                                            <FaBars size={28} />
-                                                  </button>
-                                                  <h1 className="text-lg font-bold">Dashboard</h1>
-                                        </header>
+                {/* Content Area */}
+                <main className="w-full px-4 sm:px-8">{children}</main>
 
-                                        {/* Content Area */}
-                                        <main className="flex-grow p-6 overflow-y-auto">{children}</main>
-
-                                        {/* Toast Notifications */}
-                                        <ToastContainer />
-                              </div>
-                    </div>
-          );
+                {/* Toast Notifications */}
+                <ToastContainer />
+            </div>
+        </div>
+    );
 };
 
 export default DashboardLayout;
