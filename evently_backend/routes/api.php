@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\PermissionController;
-use App\Http\Controllers\Api\Auth\RoleController;
+use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TicketTypeController;
@@ -39,16 +39,23 @@ Route::get('getUsers', [UserController::class, 'getUsers']);
 
 
 // roles api's
-Route::post('createRole', [RoleController::class,'createRole']);
-Route::get('getRoles', [RoleController::class,'getRoles']);
-Route::get('getRole/{id}', [RoleController::class,'getRole']);
-Route::put('editRole/{id}', [RoleController::class,'editRole']);
-Route::delete('deleteRole/{id}', [RoleController::class,'deleteRole']);
+Route::prefix('roles')->group(function () {
+    Route::post('/', [RoleController::class, 'createRole']);
+    Route::get('/', [RoleController::class, 'getRoles']);
+    Route::get('{role}', [RoleController::class, 'getRole']);
+    Route::put('{role}', [RoleController::class, 'editRole']);
+    Route::delete('{role}', [RoleController::class, 'deleteRole']);
 
+    // Role-Permission APIs
+    Route::get('{role}/permissions', [RoleController::class, 'addPermissionToRole']);
+    Route::post('{role}/permissions', [RoleController::class, 'givePermissionToRole']);
+});
 
-// permission api's
-Route::post('createPermission', [PermissionController::class,'createPermission']);
-Route::get('getPermissions', [PermissionController::class,'getPermissions']);
-Route::get('getPermission/{id}', [PermissionController::class,'getPermission']);
-Route::put('editPermission/{id}', [PermissionController::class,'editPermission']);
-Route::delete('deletePermission/{id}', [PermissionController::class,'deletePermission']);
+// Permission APIs
+Route::prefix('permissions')->group(function () {
+    Route::post('/', [PermissionController::class, 'createPermission']);
+    Route::get('/', [PermissionController::class, 'getPermissions']);
+    Route::get('{permission}', [PermissionController::class, 'getPermission']);
+    Route::put('{permission}', [PermissionController::class, 'editPermission']); 
+    Route::delete('{permission}', [PermissionController::class, 'deletePermission']); 
+});
