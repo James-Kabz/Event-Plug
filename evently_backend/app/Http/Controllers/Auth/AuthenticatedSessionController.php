@@ -41,6 +41,8 @@ class AuthenticatedSessionController extends Controller
                 'access_token' => $token,
                 'token_type' => 'Bearer',
                 'user' => $user,
+                'role' => $user->getRoleNames(), // Fetch assigned roles
+                'permissions' => $user->getAllPermissions()->pluck('name'), // Fetch assigned permissions
                 'status' => 'Login successful',
             ], 200);
 
@@ -57,6 +59,7 @@ class AuthenticatedSessionController extends Controller
             ], 500);
         }
     }
+
 
 
     public function destroy(Request $request)

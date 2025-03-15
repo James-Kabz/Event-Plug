@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TicketTypeController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\EventController;
+use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 
 // Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -22,7 +23,8 @@ Route::post('register', [RegisteredUserController::class, 'store']);
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
 
-
+// This is required for session-based authentication
+Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 
 
 
@@ -48,6 +50,10 @@ Route::get('/events/{event_id}/ticket-types', [TicketTypeController::class, 'get
 
 // users api
 Route::get('getUsers', [UserController::class, 'getUsers']);
+Route::middleware(['auth:sanctum'])->group(function() {
+    // Route::get('getUsers', [UserController::class, 'getUsers'])->middleware('role:user');
+    // Route::get('getEvents', [EventController::class, 'getEvents']);
+});
 
 
 // roles api's
