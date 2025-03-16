@@ -40,7 +40,7 @@ const CreateEventPage: React.FC = () => {
           useEffect(() => {
                     const fetchUsers = async () => {
                               try {
-                                        const response = await api.get(`getUsers`);
+                                        const response = await api.get(`users`);
                                         if (response?.data?.users) {
                                                   setUsers(response.data.users);
                                         } else {
@@ -58,7 +58,7 @@ const CreateEventPage: React.FC = () => {
           const onSubmitEvent = async (data: FormData) => {
             setFormLoading(true);
             try {
-                const response = await api.post(`createEvent`, data);
+                const response = await api.post(`events`, data);
                 if (response?.data?.id) {
                     const newEventId = response.data.id;
                     const newUserId = data.user_id;
@@ -101,7 +101,7 @@ const CreateEventPage: React.FC = () => {
             try {
                 await Promise.all(
                     ticketTypes.map((ticketType) =>
-                        api.post(`createTicketType`, { 
+                        api.post(`ticket-types`, { 
                             ...ticketType, 
                             event_id: eventId, 
                             user_id: userId ?? 1 // Ensure correct user ID

@@ -21,7 +21,7 @@ export default function EventsPage() {
           useEffect(() => {
                     const fetchEvents = async () => {
                               try {
-                                        const response = await api.get(`getEvents`);
+                                        const response = await api.get(`events`);
 
                                         const formattedEvents = response.data.events.map((event: Event) => {
                                                   const now = new Date(); // Current time

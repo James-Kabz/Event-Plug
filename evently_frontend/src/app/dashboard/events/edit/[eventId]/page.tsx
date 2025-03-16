@@ -48,7 +48,7 @@ dayjs.extend(timezone);
                     if (eventId) {
                         const fetchEvent = async () => {
                             try {
-                                const response = await api.get(`getEvent/${eventId}`);
+                                const response = await api.get(`events/${eventId}`);
                                 const event = response.data.event;
                         
                                 setEvent(event);
@@ -101,7 +101,7 @@ dayjs.extend(timezone);
                     start_time: dayjs(data.start_time).format('YYYY-MM-DD HH:mm:ss'),
                     end_time: dayjs(data.end_time).format('YYYY-MM-DD HH:mm:ss'),
                 };
-                await api.put(`editEvent/${eventId}`, formattedData);
+                await api.put(`events/${eventId}`, formattedData);
                 showToast.success('Event updated successfully!');
                 setTimeout(() => {
                     router.push('/dashboard/events');

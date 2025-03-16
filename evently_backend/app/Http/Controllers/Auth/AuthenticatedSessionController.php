@@ -14,42 +14,100 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): Response
+
+    public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        try {
+            $validated = $request->validate([
+                'email' => ['required', 'string', 'email'],
+                'password' => ['required', 'string'],
+            ]);
 
-        $user = User::where('email', $request->email)->first();
+            if (!Auth::attempt($validated)) {
+                return response()->json(['message' => 'Invalid login credentials'], 401);
+            }
 
-        if(!Auth::attempt($validatedData)) {
+            $user = Auth::user();
+            $token = $user->createToken('auth_token')->plainTextToken;
+
             return response()->json([
-                'success' => false,
-                'message' => 'Login failed. Please check your credentials.'
-            ], 401);
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->roles->pluck('name')->first(), // ✅ Ensure role is a string
+                    'permissions' => $user->getAllPermissions()->pluck('name')->toArray(), // ✅ Convert permissions to array
+                ],
+                'status' => 'Login successful',
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Something went wrong', 'error' => $e->getMessage()], 500);
         }
-
-        $token = $user->createToken($user->name)->plainTextToken;
-        
-        return response()->json([
-            'success' => true,
-            'user' => $user,
-            'access_token' => $token
-        ], 200);
     }
+
+
+
+
+
+    // public function destroy(Request $request)
+    // {
+    //     $request->user()->currentAccessToken()->delete();
+
+    //     return response()->json(['message' => 'Logout successful']);
+    // }
+
+    public function destroy(Request $request)
+    {
+        // Logout the user
+        auth()->guard('web')->logout();
+
+        // Invalidate session and regenerate CSRF token
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    // public function store(LoginRequest $request): Response
+    // {
+    //     $validatedData = $request->validate([
+    //         'email' => ['required', 'string', 'email'],
+    //         'password' => ['required', 'string'],
+    //     ]);
+
+    //     $user = User::where('email', $request->email)->first();
+
+    //     if(!Auth::attempt($validatedData)) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Login failed. Please check your credentials.'
+    //         ], 401);
+    //     }
+
+    //     $token = $user->createToken($user->name)->plainTextToken;
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'user' => $user,
+    //         'access_token' => $token
+    //     ], 200);
+    // }
 
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): Response
-    {
-        Auth::guard('web')->logout();
+    // public function destroy(Request $request): Response
+    // {
+    //     Auth::guard('web')->logout();
 
-        $request->session()->invalidate();
+    //     $request->session()->invalidate();
 
-        $request->session()->regenerateToken();
+    //     $request->session()->regenerateToken();
 
-        return response()->noContent();
-    }
+    //     return response()->noContent();
+    // }
 }
