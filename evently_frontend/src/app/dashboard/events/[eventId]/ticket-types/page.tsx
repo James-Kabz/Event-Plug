@@ -53,7 +53,7 @@ const EditTicketTypes = () => {
                         const formattedData = {
                             ...data,
                         }
-                              await api.put(`/ticketTypes/${ticketTypeId}`, formattedData);
+                              await api.put(`/ticket-types/${ticketTypeId}`, formattedData);
                               showToast.success('Ticket type updated successfully!');
                               setTimeout(() => {
                                         router.push(`/dashboard/events/${eventId}`);

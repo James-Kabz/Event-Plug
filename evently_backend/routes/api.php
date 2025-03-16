@@ -4,73 +4,86 @@ use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TicketTypeController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\EventController;
 use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
-
-// Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-// authentication
-
-
+/**
+ * -------------------------------
+ * Authentication Routes
+ * -------------------------------
+ */
 Route::post('register', [RegisteredUserController::class, 'store']);
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
-
-// This is required for session-based authentication
 Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 
-
-
-// events api's
-Route::get('getEvents', [EventController::class, 'getEvents']);
-Route::post('createEvent', [EventController::class, 'createEvent']);
-Route::get('getEvent/{id}', [EventController::class, 'getEvent']);
-Route::put('editEvent/{id}', [EventController::class, 'editEvent']);
-Route::delete('deleteEvent/{id}', [EventController::class, 'deleteEvent']);
-
-
-// ticket types api's
-
-Route::post('createTicketType', [TicketTypeController::class, 'createTicketType']);
-Route::get('getTicketTypes', [TicketTypeController::class, 'getTicketTypes']);
-Route::get('getTicketType/{id}', [TicketTypeController::class, 'getTicketType']);
-Route::put('editTicketType/{id}', [TicketTypeController::class, 'editTicketType']);
-Route::delete('deleteTicketType/{id}', [TicketTypeController::class, 'deleteTicketType']);
-
-// ticket types for event
-Route::get('/events/{event_id}/ticket-types', [TicketTypeController::class, 'getTicketTypesForEvent']);
-// Route::get('/events/{event_id}/ticket-types/{ticket_id}', [TicketTypeController::class, 'getTicketType']);
-
-// users api
-Route::get('getUsers', [UserController::class, 'getUsers']);
-Route::middleware(['auth:sanctum'])->group(function() {
-    // Route::get('getUsers', [UserController::class, 'getUsers'])->middleware('role:user');
-    // Route::get('getEvents', [EventController::class, 'getEvents']);
+/**
+ * -------------------------------
+ * Event Routes
+ * -------------------------------
+ */
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::prefix('events')->group(function () {
+        Route::get('/', [EventController::class, 'getEvents']);
+        // Route::get('/', [EventController::class, 'getEvents'])->middleware('permission:view events');
+        Route::post('/', [EventController::class, 'createEvent']);
+        Route::get('{id}', [EventController::class, 'getEvent']);
+        Route::put('{id}', [EventController::class, 'editEvent']);
+        Route::delete('{id}', [EventController::class, 'deleteEvent']);
+    });
 });
 
+/**
+ * -------------------------------
+ * Ticket Type Routes
+ * -------------------------------
+ */
+Route::middleware(['auth:sanctum'])->prefix('ticket-types')->group(function () {
+    Route::post('/', [TicketTypeController::class, 'createTicketType']);
+    Route::get('/', [TicketTypeController::class, 'getTicketTypes']);
+    Route::get('{id}', [TicketTypeController::class, 'getTicketType']);
+    Route::put('{id}', [TicketTypeController::class, 'editTicketType']);
+    Route::delete('{id}', [TicketTypeController::class, 'deleteTicketType']);
+});
 
-// roles api's
-Route::prefix('roles')->group(function () {
+Route::get('/events/{event_id}/ticket-types', [TicketTypeController::class, 'getTicketTypesForEvent']);
+
+/**
+ * -------------------------------
+ * User Routes
+ * -------------------------------
+ */
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('users', [UserController::class, 'getUsers'])->middleware('role:user');
+});
+
+/**
+ * -------------------------------
+ * Role Routes
+ * -------------------------------
+ */
+Route::middleware(['auth:sanctum'])->prefix('roles')->group(function () {
     Route::post('/', [RoleController::class, 'createRole']);
     Route::get('/', [RoleController::class, 'getRoles']);
     Route::get('{role}', [RoleController::class, 'getRole']);
     Route::put('{role}', [RoleController::class, 'editRole']);
     Route::delete('{role}', [RoleController::class, 'deleteRole']);
-
-    // Role-Permission APIs
+    
+    // Role-Permission Management
     Route::get('{role}/permissions', [RoleController::class, 'addPermissionToRole']);
     Route::post('{role}/permissions', [RoleController::class, 'givePermissionToRole']);
 });
 
-// Permission APIs
-Route::prefix('permissions')->group(function () {
+/**
+ * -------------------------------
+ * Permission Routes
+ * -------------------------------
+ */
+Route::middleware(['auth:sanctum'])->prefix('permissions')->group(function () {
     Route::post('/', [PermissionController::class, 'createPermission']);
     Route::get('/', [PermissionController::class, 'getPermissions']);
     Route::get('{permission}', [PermissionController::class, 'getPermission']);

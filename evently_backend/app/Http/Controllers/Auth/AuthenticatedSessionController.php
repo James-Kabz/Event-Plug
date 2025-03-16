@@ -18,56 +18,60 @@ class AuthenticatedSessionController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validate request
             $validated = $request->validate([
                 'email' => ['required', 'string', 'email'],
                 'password' => ['required', 'string'],
             ]);
 
-            // Attempt login
             if (!Auth::attempt($validated)) {
-                return response()->json([
-                    'message' => 'Invalid login credentials',
-                ], 401);
+                return response()->json(['message' => 'Invalid login credentials'], 401);
             }
 
-            // Get authenticated user
             $user = Auth::user();
-
-            // Generate API token
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'user' => $user,
-                'role' => $user->getRoleNames(), // Fetch assigned roles
-                'permissions' => $user->getAllPermissions()->pluck('name'), // Fetch assigned permissions
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->roles->pluck('name')->first(), // ✅ Ensure role is a string
+                    'permissions' => $user->getAllPermissions()->pluck('name')->toArray(), // ✅ Convert permissions to array
+                ],
                 'status' => 'Login successful',
             ], 200);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $e->errors(),
-            ], 422);
-
+            return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
         } catch (\Throwable $e) {
-            return response()->json([
-                'message' => 'Something went wrong',
-                'error' => $e->getMessage(),
-            ], 500);
+            return response()->json(['message' => 'Something went wrong', 'error' => $e->getMessage()], 500);
         }
     }
 
 
 
+
+
+    // public function destroy(Request $request)
+    // {
+    //     $request->user()->currentAccessToken()->delete();
+
+    //     return response()->json(['message' => 'Logout successful']);
+    // }
+
     public function destroy(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        // Logout the user
+        auth()->guard('web')->logout();
 
-        return response()->json(['message' => 'Logout successful']);
+        // Invalidate session and regenerate CSRF token
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json(['message' => 'Logged out successfully']);
     }
+
     // public function store(LoginRequest $request): Response
     // {
     //     $validatedData = $request->validate([

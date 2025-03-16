@@ -20,7 +20,7 @@ export default function EventDetailPage() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await api.get(`getEvent/${eventId}`);
+        const response = await api.get(`events/${eventId}`);
         const data = response.data;
   
         console.log("API Response:", data); // Debugging line
