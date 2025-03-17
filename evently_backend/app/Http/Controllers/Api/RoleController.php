@@ -13,17 +13,19 @@ class RoleController extends Controller
     // create role
     public function createRole(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'unique:roles,name'
             ],
+            'guard_name' => 'nullable|string|in:web,sanctum' // Allow only 'web' or 'sanctum'
         ]);
 
-        $role = Role::create([
-            'name' => $request->name,
-        ]);
+        // Default to 'web' if not provided
+        $validatedData['guard_name'] = $validatedData['guard_name'] ?? 'web';
+
+        $role = Role::create($validatedData);
 
         return response()->json([
             'message' => 'Role created successfully.',
