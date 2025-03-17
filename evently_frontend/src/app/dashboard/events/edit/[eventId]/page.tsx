@@ -80,7 +80,7 @@ dayjs.extend(timezone);
 
                               const fetchUsers = async () => {
                                         try {
-                                                  const response = await api.get(`getUsers`);
+                                                  const response = await api.get(`users`);
                                                   setUsers(response.data.users);
                                         } catch (err) {
                                                   console.log(err);

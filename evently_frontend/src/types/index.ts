@@ -2,8 +2,19 @@ export interface User {
   id: number;
   name:string;
   email: string;
+  roles: string;
   password: string;
   access_token: string;
+}
+
+export interface Role{
+  id: number;
+  name: string;
+}
+
+export interface Permission{
+  id: number;
+  name: string;
 }
 
 export interface Event {

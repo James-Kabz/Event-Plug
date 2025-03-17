@@ -80,12 +80,12 @@ class RoleController extends Controller
         ]);
     }
 
-    // attach permission to role
+    // Fetch role with its permissions
     public function addPermissionToRole($roleId)
     {
-        $role = Role::findOrFail($roleId);
-        $permissions = Permission::all(); // Fetch all permissions
-        $rolePermissions = $role->permissions->pluck('id')->toArray(); // Get current role permissions
+        $role = Role::with('permissions')->findOrFail($roleId);
+        $permissions = Permission::all();
+        $rolePermissions = $role->permissions->pluck('id')->toArray();
 
         return response()->json([
             'role' => $role,
@@ -94,6 +94,7 @@ class RoleController extends Controller
         ]);
     }
 
+    // Assign multiple permissions to a role
     public function givePermissionToRole(Request $request, $roleId)
     {
         $request->validate([
@@ -110,7 +111,6 @@ class RoleController extends Controller
             'assignedPermissions' => $role->permissions
         ]);
     }
-
 
 
 }
