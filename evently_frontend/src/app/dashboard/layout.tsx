@@ -203,10 +203,26 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                                     </li>
                                     <li>
                                         <button
+                                            onClick={() => router.push("/dashboard/permissions")}
+                                            className="block w-full p-3 hover:bg-gray-700 rounded-md transition duration-200"
+                                        >
+                                            👥 Permissions
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
                                             onClick={() => router.push("/dashboard/roles/create")}
                                             className="block w-full p-3 hover:bg-gray-700 rounded-md transition duration-200"
                                         >
                                             ➕ Create Role
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            onClick={() => router.push("/dashboard/permissions/create")}
+                                            className="block w-full p-3 hover:bg-gray-700 rounded-md transition duration-200"
+                                        >
+                                            ➕ Permissions
                                         </button>
                                     </li>
                                 </ul>

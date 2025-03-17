@@ -161,7 +161,7 @@ const CreateEventPage: React.FC = () => {
 
           return (
                     <div className="w-full max-w-5xl mx-auto my-auto text-black bg-white p-4 sm:p-6 rounded-lg shadow">
-                              <ToastContainer position="top-right" autoClose={3000} />
+                              <ToastContainer />
                               <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center sm:text-left">
                                         {step === 1 ? "Create New Event" : "Add Ticket Types"}
                               </h2>

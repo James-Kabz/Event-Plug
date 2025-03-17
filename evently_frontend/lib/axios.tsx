@@ -7,10 +7,10 @@ const api = axios.create({
         "Accept": "application/json",
         "Content-Type": "application/json",
     },
-    withCredentials: true, // Important for authentication & cookies
+    withCredentials: true,
 });
 
-// Fetch CSRF Token from Cookies and Attach it to Requests
+
 api.interceptors.request.use((config) => {
     const xsrfToken = document.cookie
         .split("; ")

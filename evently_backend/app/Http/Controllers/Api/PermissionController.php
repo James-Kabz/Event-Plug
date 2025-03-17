@@ -10,23 +10,26 @@ class PermissionController extends Controller
 {
     public function createPermission(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'unique:permissions,name'
             ],
+            'guard_name' => 'nullable|string|in:web,sanctum' // Allow only 'web' or 'sanctum'
         ]);
 
-        $permission = Permission::create([
-            'name' => $request->name,
-        ]);
+        // Default to 'web' if not provided
+        $validatedData['guard_name'] = $validatedData['guard_name'] ?? 'web';
+
+        $permission = Permission::create($validatedData);
 
         return response()->json([
             'message' => 'Permission created successfully.',
             'permission' => $permission,
         ]);
     }
+
 
     public function getPermission($id)
     {

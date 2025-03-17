@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
             'phone_number' => '0740289578',
             'email_verified_at' => now(),
             'activation_token' => Str::random(32),
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('@kabz123'),
             'remember_token' => Str::random(10),
         ]);
         $superAdmin->assignRole('super admin');
@@ -67,7 +67,7 @@ class UserSeeder extends Seeder
             'phone_number' => '0987654321',
             'email_verified_at' => now(),
             'activation_token' => Str::random(32),
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('@kabz123'),
             'remember_token' => Str::random(10),
         ]);
         $eventOrganiser->assignRole('event organiser');
