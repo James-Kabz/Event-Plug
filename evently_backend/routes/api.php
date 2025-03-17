@@ -28,8 +28,8 @@ Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
  */
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('events')->group(function () {
-        Route::get('/', [EventController::class, 'getEvents']);
-        // Route::get('/', [EventController::class, 'getEvents'])->middleware('permission:view events');
+        // Route::get('/', [EventController::class, 'getEvents']);
+        Route::get('/', [EventController::class, 'getEvents'])->middleware('permission:view event');
         Route::post('/', [EventController::class, 'createEvent']);
         Route::get('{id}', [EventController::class, 'getEvent']);
         Route::put('{id}', [EventController::class, 'editEvent']);
@@ -58,7 +58,7 @@ Route::get('/events/{event_id}/ticket-types', [TicketTypeController::class, 'get
  * -------------------------------
  */
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('users', [UserController::class, 'getUsers'])->middleware('role:user');
+    Route::get('users', [UserController::class, 'getUsers'])->middleware('role:super admin');
 });
 
 /**
