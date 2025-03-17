@@ -1,4 +1,4 @@
-This project uses laravel for backend and next js for backend
+This project uses laravel for back-end and next js for front-end
 # 🎟️ Event Management System
 
 ## 📌 Overview
