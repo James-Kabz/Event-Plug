@@ -1,13 +1,13 @@
-import React, { JSX, useEffect, useState } from "react";
+import React, { JSX, ReactNode, useEffect, useState } from "react";
 import { FaExclamationTriangle, FaEye, FaPencilAlt, FaTrash, FaUserShield } from "react-icons/fa";
 
-interface Column<T> {
+interface Column {
     header: string;
-    accessor: keyof T;
+    accessor: string;
 }
 
 interface TableProps<T> {
-    columns: Column<T>[];
+    columns: Column[];
     data: T[];
     onEdit?: (item: T) => void;
     onDelete?: (item: T) => void;
@@ -30,7 +30,40 @@ const Table = <T,>({
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [, setSearch] = useState<string>("");
     const [isMobile, setIsMobile] = useState<boolean>(false);
-    const [selectedColumns, setSelectedColumns] = useState<(keyof T)[]>(columns.map((col) => col.accessor));
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(columns.map((col) => col.accessor));
+
+    const getNestedValue = (obj: T, path: string): ReactNode => {
+        const value = path.split('.').reduce<unknown>((acc, key) => {
+            return typeof acc === 'object' && acc !== null && key in acc ? acc[key as keyof typeof acc] : undefined;
+        }, obj);
+        // return typeof value === 'string' || typeof value === 'number'
+        //     ? value
+        //     : value === null || value === undefined
+        //         ? null
+        //         : React.isValidElement(value)
+        //             ? value
+        //             : JSON.stringify(value);
+        return Array.isArray(value)
+            ? value.join(", ")
+            : typeof value === "string" || typeof value === "number"
+                ? value
+                : value === null || value === undefined
+                    ? null
+                    : React.isValidElement(value)
+                        ? value
+                        : JSON.stringify(value);
+
+    };
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+        }
+    };
+
+    const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setRowsPerPage(Number(event.target.value));
+        setCurrentPage(1);
+    };
 
     useEffect(() => {
         const checkMobileView = () => setIsMobile(window.innerWidth <= 768);
@@ -73,7 +106,7 @@ const Table = <T,>({
                 />
 
                 {/* Rows per page */}
-                <select
+                {/* <select
                     value={rowsPerPage}
                     onChange={(e) => setRowsPerPage(Number(e.target.value))}
                     className="py-1 px-2 border rounded-md"
@@ -82,8 +115,27 @@ const Table = <T,>({
                     <option value={10}>10</option>
                     <option value={25}>25</option>
                     <option value={100}>100</option>
-                </select>
+                </select> */}
+                <div className="flex flex-col sm:flex-row w-full sm:w-auto space-y-4 sm:space-y-0 sm:space-x-4">
+                    <div className="w-full sm:w-auto">
+                        <label htmlFor="rowsPerPage" className="mr-2">
+                            Rows per page:
+                        </label>
+                        <select
+                            id="rowsPerPage"
+                            value={rowsPerPage}
+                            onChange={handleRowsPerPageChange}
+                            className="py-1 px-2 border border-gray-300 rounded-md"
+                        >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={25}>25</option>
+                            <option value={100}>100</option>
+                        </select>
+                    </div>
+                </div>
             </div>
+
 
             {/* Table */}
             <table className="min-w-full divide-y divide-gray-200">
@@ -105,8 +157,8 @@ const Table = <T,>({
                             {columns
                                 .filter((col) => selectedColumns.includes(col.accessor))
                                 .map((column) => (
-                                    <td key={String(column.accessor)} className="px-4 py-2">
-                                        {String(row[column.accessor])}
+                                    <td key={column.accessor} className="px-4 py-2">
+                                        {getNestedValue(row, column.accessor)}
                                     </td>
                                 ))}
                             {(onEdit || onDelete || onView || onManagePermissions) && (
@@ -148,8 +200,9 @@ const Table = <T,>({
             {/* Pagination */}
             <div className="border py-1 px-4 flex justify-between items-center">
                 <button
+                    type="button"
                     className="p-2 text-sm text-gray-800 hover:bg-gray-100"
-                    onClick={() => setCurrentPage(currentPage - 1)}
+                    onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                 >
                     « Previous
@@ -160,8 +213,9 @@ const Table = <T,>({
                 </span>
 
                 <button
+                    type="button"
                     className="p-2 text-sm text-gray-800 hover:bg-gray-100"
-                    onClick={() => setCurrentPage(currentPage + 1)}
+                    onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                 >
                     Next »

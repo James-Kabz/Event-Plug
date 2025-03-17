@@ -2,7 +2,7 @@ export interface User {
   id: number;
   name:string;
   email: string;
-  role: string;
+  roles: string;
   password: string;
   access_token: string;
 }

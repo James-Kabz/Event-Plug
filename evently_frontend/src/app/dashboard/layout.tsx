@@ -6,7 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { Menu } from "lucide-react";
 import {
     FaUsers,
-    FaGraduationCap,
     FaWpforms,
     FaPowerOff,
     FaChevronDown,
@@ -75,11 +74,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             link: "/dashboard",
         },
         {
-            name: "Ticket Types",
-            icon: <FaGraduationCap size={22} />,
-            link: "/dashboard/ticket-types",
-        },
-        {
             name: "Tickets",
             icon: <FaWpforms size={22} />,
             link: "/dashboard/tickets",
@@ -87,10 +81,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     ];
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen mx-1">
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 z-50 w-72 bg-gray-900 text-white shadow-xl transform transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed inset-y-0 left-0 z-50 w-60 bg-gray-900 text-white shadow-xl transform transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
                     } md:translate-x-0`}
             >
                 <div className="p-6 space-y-4 mt-5">
@@ -102,7 +96,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                                         handleTabChange(tab.name);
                                         router.push(tab.link);
                                     }}
-                                    className={`flex items-center w-full p-3 rounded-lg text-lg transition-all font-medium ${
+                                    className={`flex items-center w-full p-3 rounded-lg text-sm transition-all font-medium ${
                                         activeTab === tab.name
                                             ? "bg-gradient-to-r from-blue-500 to-blue-700"
                                             : "hover:bg-gray-800"
@@ -118,7 +112,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                         <li>
                             <button
                                 onClick={() => setEventsDropdownOpen(!eventsDropdownOpen)}
-                                className="flex items-center w-full p-3 rounded-lg text-lg transition-all bg-gray-800 hover:bg-blue-600"
+                                className="flex items-center w-full p-3 rounded-lg text-sm transition-all bg-gray-800 hover:bg-blue-600"
                             >
                                 <FaRegCalendarCheck size={22} className="mr-3" />
                                 <span>Events</span>
@@ -153,7 +147,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                         <li>
                             <button
                                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                                className="flex items-center w-full p-3 rounded-lg text-lg transition-all bg-gray-800 hover:bg-blue-600"
+                                className="flex items-center w-full p-3 rounded-lg text-sm transition-all bg-gray-800 hover:bg-blue-600"
                             >
                                 <FaUsers size={22} className="mr-3" />
                                 <span>Users</span>
@@ -188,7 +182,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                         <li>
                             <button
                                 onClick={() => setPermissionsDropdownOpen(!permissionsDropdownOpen)}
-                                className="flex items-center w-full p-3 rounded-lg text-lg transition-all bg-gray-800 hover:bg-blue-600"
+                                className="flex items-center w-full p-3 rounded-lg text-sm transition-all bg-gray-800 hover:bg-blue-600"
                             >
                                 <FaUsers size={22} className="mr-3" />
                                 <span>Roles/Permissions</span>
@@ -224,7 +218,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                         <li>
                             <button
                                 onClick={() => router.push("/dashboard/user-profile")}
-                                className="flex items-center w-full p-3 rounded-lg text-lg bg-gray-800 hover:bg-blue-600 transition duration-300"
+                                className="flex items-center w-full p-3 rounded-lg text-sm bg-gray-800 hover:bg-blue-600 transition duration-300"
                             >
                                 <PiUserCircleGearDuotone size={22} className="mr-3" />
                                 <span>My Profile</span>
@@ -235,7 +229,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                         <li>
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center w-full p-3 rounded-lg text-lg bg-red-600 hover:bg-red-700 transition duration-300"
+                                className="flex items-center w-full p-3 rounded-lg text-sm bg-red-600 hover:bg-red-700 transition duration-300"
                             >
                                 <FaPowerOff size={22} className="mr-3" />
                                 <span>Logout</span>
@@ -247,7 +241,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
             {/* Main Content */}
             <div
-                className={`flex flex-col flex-1 transition-all duration-300 ${sidebarOpen ? "ml-44" : "ml-0 md:ml-72"
+                className={`flex flex-col flex-1 transition-all duration-300 mt-5 mx-auto ${sidebarOpen ? "ml-0" : "ml-0 md:ml-60"
                     }`}
             >
                 {/* Sidebar Toggle Button */}
@@ -259,7 +253,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 </button>
 
                 {/* Content Area */}
-                <main className="w-full px-0 ">
+                <main className="w-full px-0 mx-auto">
                     {children}
                 </main>
 
