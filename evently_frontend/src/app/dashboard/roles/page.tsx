@@ -69,7 +69,7 @@ const RolesPage: React.FC = () => {
     const handleEdit = (role: Role) => {
         showToast.info("Editing role...");
         console.log("Redirect to edit role:", role.id);
-        // router.push(`/dashboard/roles/edit/${role.id}`); // Uncomment if using `useRouter`
+        router.push(`/dashboard/roles/edit/${role.id}`); // Uncomment if using `useRouter`
     };
 
     const handleManagePermissions = (role: Role) => {
